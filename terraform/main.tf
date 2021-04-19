@@ -470,3 +470,21 @@ resource "aws_glue_job" "parquet_converter" {
     max_concurrent_runs = 1
   }
 }
+
+resource "aws_glue_trigger" "parquet_converter"  {
+  enabled = true
+  name = "cm-analytics-parquet-converter-trigger"
+  schedule = "cron(07 0/1 * * ? *)"
+  tags = {}
+  type = "SCHEDULED"
+
+  actions {
+    arguments = {
+        "--job-bookmark-option" = "job-bookmark-enable"
+    }
+    job_name = aws_glue_job.parquet_converter.name
+    timeout = 10
+  }
+
+  timeouts {}
+}
